@@ -197,10 +197,11 @@ Lakukan ujicoba dengan `ping baratayuda.abimanyu.b11.com` `ping www.baratayuda.a
 
 # Soal 9 dan 10
 Arjuna merupakan suatu Load Balancer Nginx dengan tiga worker (yang juga menggunakan nginx sebagai webserver) yaitu Prabakusuma, Abimanyu, dan Wisanggeni. Lakukan deployment pada masing-masing worker.
+
 Kemudian gunakan algoritma Round Robin untuk Load Balancer pada Arjuna. Gunakan server_name pada soal nomor 1. Untuk melakukan pengecekan akses alamat web tersebut kemudian pastikan worker yang digunakan untuk menangani permintaan akan berganti ganti secara acak. Untuk webserver di masing-masing worker wajib berjalan di port 8001-8003. Contoh
-    - Prabakusuma:8001
-    - Abimanyu:8002
-    - Wisanggeni:8003
+- Prabakusuma:8001
+- Abimanyu:8002
+- Wisanggeni:8003
 ## Jawaban
 Pada Arjuna, tepatnya pada /etc/nginx/sites-available/arjuna, dilakukan konfigurasi seperti berikut.
 
