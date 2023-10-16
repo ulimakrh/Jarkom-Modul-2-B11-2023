@@ -47,7 +47,7 @@ Jalankan `ping arjuna.b11.com` dan `ping www.arjuna.b11.com` untuk mengecek suda
 Dengan cara yang sama seperti soal nomor 2, buatlah website utama dengan akses ke abimanyu.yyy.com dan alias www.abimanyu.yyy.com.
 ## Jawaban
 Soal nomor ini memiliki langkah yang serupa dengan nomor 2.
-- Pada Yudhistira
+- Yudhistira
 ```
 zone “abimanyu.b11.com” {
 	type master;
@@ -58,7 +58,7 @@ zone “abimanyu.b11.com” {
 
 ![image](https://github.com/ulimakrh/Jarkom-Modul-2-B11-2023/assets/114993076/6e2afe56-f15c-42e8-ac44-2d3313ec096f)
 
-- Pada Abimanyu
+- Abimanyu
 
 ![image](https://github.com/ulimakrh/Jarkom-Modul-2-B11-2023/assets/114993076/a5e02409-f747-42f6-9ff4-df6c9cfb186a)
 
@@ -115,13 +115,13 @@ zone "abimanyu.b11.com" {
 
 Kemudian stop bind9 dengan `service bind9 stop`.
 
-- Pada Werkudara
+- Werkudara
 
 Dilakukan setup pada /etc/bind/named.conf.local seperti di bawah ini.
 
 ![image](https://github.com/ulimakrh/Jarkom-Modul-2-B11-2023/assets/114993076/a321a443-7d9b-410a-a623-5919da23e5ba)
 
-- Pada Sadewa
+- Sadewa
 
 Setup nameserver di /etc/resolv.conf dengan IP Yudhistira dan IP Werkudara.
 
@@ -143,7 +143,7 @@ Lalu, setup untuk mengizinkan akses query pada /etc/bind/named.conf.options sepe
 
 Kemudian restart bind9 dengan `service bind9 restart`
 
-- Pada Werkudara
+- Werkudara
   
 Buat setup /etc/bind/named.conf.options sama seperti pada Yudhistira.
 
@@ -161,7 +161,7 @@ Buat setup pada /etc/bind/delegate/baratayuda/baratayuda.abimanyu.b11.com sepert
 
 Kemudian restart bind9 dengan `service bind9 restart`.
 
-- Pada Sadewa
+- Sadewa
 
 Jalankan `ping baratayuda.abimanyu.b11.com` dan `ping www.baratayuda.abimanyu.b11.com`
 
@@ -169,15 +169,66 @@ Jalankan `ping baratayuda.abimanyu.b11.com` dan `ping www.baratayuda.abimanyu.b1
 
 # Soal 8
 Untuk informasi yang lebih spesifik mengenai Ranjapan Baratayuda, buatlah subdomain melalui Werkudara dengan akses rjp.baratayuda.abimanyu.yyy.com dengan alias www.rjp.baratayuda.abimanyu.yyy.com yang mengarah ke Abimanyu.
+## Jawaban
+Setup /etc/bind/named.conf.local pada Wekudara seperti berikut.
+```
+zone "baratayuda.abimanyu.b11.com" {
+    type master;
+    file "/etc/bind/delegate/baratayuda/baratayuda.abimanyu.b11.com";
+};
+```
+![image](https://github.com/ulimakrh/Jarkom-Modul-2-B11-2023/assets/114993076/1f89c9f0-a961-417e-a2ab-f4c6152d23ff)
 
-# Soal 9
+Lalu, buat direktori baru dan setup direktori tersebut.
+```
+mkdir /etc/bind/delegate
+mkdir /etc/bind/delegate/baratayuda
+```
+Berikut adalah setup dari /etc/bind/delegate/baratayuda/baratayuda.abimanyu.b11.com. Kemudian restart bind9 dengan
+`service bind9 restart`
+
+![image](https://github.com/ulimakrh/Jarkom-Modul-2-B11-2023/assets/114993076/588a0e4d-b98d-48b0-8fe2-747c2f662d44)
+
+- Sadewa
+
+Lakukan ujicoba dengan `ping baratayuda.abimanyu.b11.com` `ping www.baratayuda.abimanyu.b11.com`
+
+![image](https://github.com/ulimakrh/Jarkom-Modul-2-B11-2023/assets/114993076/ec3cbd78-f305-4276-8608-25847ef2c0aa)
+
+# Soal 9 dan 10
 Arjuna merupakan suatu Load Balancer Nginx dengan tiga worker (yang juga menggunakan nginx sebagai webserver) yaitu Prabakusuma, Abimanyu, dan Wisanggeni. Lakukan deployment pada masing-masing worker.
-
-# Soal 10
 Kemudian gunakan algoritma Round Robin untuk Load Balancer pada Arjuna. Gunakan server_name pada soal nomor 1. Untuk melakukan pengecekan akses alamat web tersebut kemudian pastikan worker yang digunakan untuk menangani permintaan akan berganti ganti secara acak. Untuk webserver di masing-masing worker wajib berjalan di port 8001-8003. Contoh
     - Prabakusuma:8001
     - Abimanyu:8002
     - Wisanggeni:8003
+## Jawaban
+Pada Arjuna, tepatnya pada /etc/nginx/sites-available/arjuna, dilakukan konfigurasi seperti berikut.
+
+![image](https://github.com/ulimakrh/Jarkom-Modul-2-B11-2023/assets/114993076/5a78a2fb-07a3-430e-8565-0978bdf847c9)
+
+IP pada blok upstream arjuna.b11.com adalah IP dari Prabukusuma, Abimanyu, dan Wisanggeni.
+
+Setelah config, hapus file default pada /etc/nginx/sites-available/default, dan dibentuk symlink dari file /etc/nginx/sites-available/arjuna ke folder /etc/nginx/sites-enabled/.
+```
+rm /etc/nginx/sites-available/default
+ln -s /etc/nginx/sites-available/arjuna /etc/nginx/sites-enabled
+```
+Lalu, restart kembali nginx dengan `service nginx restart`.
+
+- Prabukusuma, Abimanyu, Wisanggeni
+Lakukan command-command berikut ini.
+```
+wget -O arjuna.zip --no-check-certificate -r 'https://drive.google.com/uc?export=download&id=17tAM_XDKYWDvF-JJix1x7txvTBEax7vX'
+// download
+unzip arjuna.zip // unzip
+rm arjuna.zip // remove zip
+```
+Ganti root dengan folder tempat index.php yang telah diekstrak tadi sebagai value, dan ubah value angka listen di awal file config dengan angka yang sesuai untuk semuanya (Prabukusuma 8001, Abimanyu 8002, Wisanggeni 8003). Berikut adalah contoh dari node Prabukusuma.
+
+![image](https://github.com/ulimakrh/Jarkom-Modul-2-B11-2023/assets/114993076/2ae27f6a-432e-4c2f-9021-f422a909444e)
+
+Buat setup pada /var/www/html/index.php seperti berikut.
+![image](https://github.com/ulimakrh/Jarkom-Modul-2-B11-2023/assets/114993076/32e6e6ef-8708-4ba6-96e7-e0415782cc18)
 
 # Soal 11
 Selain menggunakan Nginx, lakukan konfigurasi Apache Web Server pada worker Abimanyu dengan web server www.abimanyu.yyy.com. Pertama dibutuhkan web server dengan DocumentRoot pada /var/www/abimanyu.yyy
