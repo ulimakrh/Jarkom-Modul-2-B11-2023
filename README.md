@@ -22,12 +22,9 @@ Buatlah website utama pada node arjuna dengan akses ke arjuna.yyy.com dengan ali
 Pertama, dilakukan setup Domain Name di Master DNS Server (Yudhistira). Lakukan `nano /etc/bind/named.conf.local` dan tambahkan setup seperti gambar di bawah.
 
 ```
-zone "arjuna.b11.com" { 
-    type master; 
-    notify yes;
-    also-notify { 10.14.2.2; };
-    allow-transfer { 10.14.2.2; };
-    file "/etc/bind/domain/arjuna.b11.com";
+zone “arjuna.b11.com” {
+	type master;
+	file “/etc/bind/domain/arjuna.b11.com";
 };
 ```
 
@@ -52,12 +49,9 @@ Dengan cara yang sama seperti soal nomor 2, buatlah website utama dengan akses k
 Soal nomor ini memiliki langkah yang serupa dengan nomor 2.
 - Pada Yudhistira
 ```
-zone "abimanyu.b11.com" {
-    type master; 
-    notify yes;
-    also-notify { 10.14.2.2; };
-    allow-transfer { 10.14.2.2; };
-    file "/etc/bind/domain/abimanyu.b11.com";
+zone “abimanyu.b11.com” {
+	type master;
+	file “/etc/bind/domain/abimanyu.it19.com";
 };
 ```
 ![image](https://github.com/ulimakrh/Jarkom-Modul-2-B11-2023/assets/114993076/e6c0a9bd-67a8-4c87-971a-9a4565323ef8)
@@ -65,7 +59,7 @@ zone "abimanyu.b11.com" {
 ![image](https://github.com/ulimakrh/Jarkom-Modul-2-B11-2023/assets/114993076/6e2afe56-f15c-42e8-ac44-2d3313ec096f)
 
 - Pada Abimanyu
-- 
+
 ![image](https://github.com/ulimakrh/Jarkom-Modul-2-B11-2023/assets/114993076/a5e02409-f747-42f6-9ff4-df6c9cfb186a)
 
 ![image](https://github.com/ulimakrh/Jarkom-Modul-2-B11-2023/assets/114993076/a9bae43b-2b10-4c71-9377-8bed41760037)
@@ -78,6 +72,7 @@ Pada Yudhistira, dilakukan setup /etc/bind/domain/abimanyu.b11.com dengan menamb
 ![image](https://github.com/ulimakrh/Jarkom-Modul-2-B11-2023/assets/114993076/e6852679-240f-4abc-be63-eef009717970)
 
 Lakukan ujicoba pada Abimanyu dengan menjalankan `ping parikesit.abimanyu.b11.com`
+
 ![image](https://github.com/ulimakrh/Jarkom-Modul-2-B11-2023/assets/114993076/ab78637e-7a52-4ecc-8be8-6e608ea0659c)
 
 # Soal 5
@@ -88,16 +83,89 @@ Pertama, lakukan setup pada /etc/bind/named.conf.local Yudhistira. 4.14.10 sendi
 ![image](https://github.com/ulimakrh/Jarkom-Modul-2-B11-2023/assets/114993076/700c6fbe-f911-42bc-80c8-6d0758938921)
 
 Lakukan setup seperti pada gambar di bawah.
+
 ![image](https://github.com/ulimakrh/Jarkom-Modul-2-B11-2023/assets/114993076/264c4144-765d-475b-8839-46561a5b6eb3)
 
 Pada Abimanyu, lakukan pengecekan dengan `host -t PTR 10.14.4.4` (IP Abimanyu).
+
 ![image](https://github.com/ulimakrh/Jarkom-Modul-2-B11-2023/assets/114993076/6bfd6ef5-2d6f-4265-8cd8-323a949f31ef)
 
 # Soal 6
 Agar dapat tetap dihubungi ketika DNS Server Yudhistira bermasalah, buat juga Werkudara sebagai DNS Slave untuk domain utama.
+## Jawaban
+Setup pada /etc/bind/named.conf.local.
+```
+zone "arjuna.b11.com" { 
+    type master; 
+    notify yes;
+    also-notify { 10.14.2.2; };
+    allow-transfer { 10.14.2.2; };
+    file "/etc/bind/domain/arjuna.b11.com";
+};
+
+zone "abimanyu.b11.com" {
+    type master; 
+    notify yes;
+    also-notify { 10.14.2.2; };
+    allow-transfer { 10.14.2.2; };
+    file "/etc/bind/domain/abimanyu.b11.com";
+};
+```
+![image](https://github.com/ulimakrh/Jarkom-Modul-2-B11-2023/assets/114993076/1e2b10fc-6593-491d-a224-4c9683619f27)
+
+Kemudian stop bind9 dengan `service bind9 stop`.
+
+- Pada Werkudara
+
+Dilakukan setup pada /etc/bind/named.conf.local seperti di bawah ini.
+
+![image](https://github.com/ulimakrh/Jarkom-Modul-2-B11-2023/assets/114993076/a321a443-7d9b-410a-a623-5919da23e5ba)
+
+- Pada Sadewa
+
+Setup nameserver di /etc/resolv.conf dengan IP Yudhistira dan IP Werkudara.
+
+![image](https://github.com/ulimakrh/Jarkom-Modul-2-B11-2023/assets/114993076/e98b2cb7-85da-4320-9cae-3be1efe06da8)
+
+Lakukan ujicoba dengan melakukan `ping abimanyu.b11.com`
+![image](https://github.com/ulimakrh/Jarkom-Modul-2-B11-2023/assets/114993076/e1699e61-6c7b-4fce-8ff4-1c8539b2787e)
 
 # Soal 7
 Seperti yang kita tahu karena banyak sekali informasi yang harus diterima, buatlah subdomain khusus untuk perang yaitu baratayuda.abimanyu.yyy.com dengan alias www.baratayuda.abimanyu.yyy.com yang didelegasikan dari Yudhistira ke Werkudara dengan IP menuju ke Abimanyu dalam folder Baratayuda.
+## Jawaban
+Pada Yudhistira, lakukan setup pada /etc/bind/domain/abimanyu.b11.com seperti gambar di bawah ini.
+
+![image](https://github.com/ulimakrh/Jarkom-Modul-2-B11-2023/assets/114993076/27db769e-f383-4838-b91a-580af3995f83)
+
+Lalu, setup untuk mengizinkan akses query pada /etc/bind/named.conf.options seperti di bawah ini.
+
+![image](https://github.com/ulimakrh/Jarkom-Modul-2-B11-2023/assets/114993076/8ca4e73e-6107-4e40-b66c-c2187e29cc3d)
+
+Kemudian restart bind9 dengan `service bind9 restart`
+
+- Pada Werkudara
+  
+Buat setup /etc/bind/named.conf.options sama seperti pada Yudhistira.
+
+![image](https://github.com/ulimakrh/Jarkom-Modul-2-B11-2023/assets/114993076/178527a5-34ea-4b04-8110-bfdd553109b5)
+
+Buat direktori baru dan lakukan copy db.local ke /etc/bind/delegate/baratayuda
+```
+mkdir /etc/bind/delegate
+mkdir /etc/bind/delegate/baratayuda
+cp /etc/bind/db.local /etc/bind/delegate/baratayuda
+```
+Buat setup pada /etc/bind/delegate/baratayuda/baratayuda.abimanyu.b11.com seperti di bawah ini.
+
+![image](https://github.com/ulimakrh/Jarkom-Modul-2-B11-2023/assets/114993076/f8ad564e-9bf5-4e12-8d30-07d63665307d)
+
+Kemudian restart bind9 dengan `service bind9 restart`.
+
+- Pada Sadewa
+
+Jalankan `ping baratayuda.abimanyu.b11.com` dan `ping www.baratayuda.abimanyu.b11.com`
+
+![image](https://github.com/ulimakrh/Jarkom-Modul-2-B11-2023/assets/114993076/a9ff3a6e-c028-4bda-b345-80672a49d7fc)
 
 # Soal 8
 Untuk informasi yang lebih spesifik mengenai Ranjapan Baratayuda, buatlah subdomain melalui Werkudara dengan akses rjp.baratayuda.abimanyu.yyy.com dengan alias www.rjp.baratayuda.abimanyu.yyy.com yang mengarah ke Abimanyu.
