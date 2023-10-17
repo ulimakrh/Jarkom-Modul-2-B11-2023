@@ -284,6 +284,8 @@ rm /var/www/parikesit
 rm -rf /var/www/parikesit.abimanyu.yyy.com/
 ```
 ![image](https://github.com/ulimakrh/Jarkom-Modul-2-B11-2023/assets/114993076/4380e1fa-16db-4dd6-ab56-1c2791f0ebfc)
+
+Masukkan konfigurasi di bawah ini ke `/etc/apache2/sites-available/parikesit.abimanyu.b11.conf` dan buat symlink ke konfigurasi.
 ```
 echo '
 <VirtualHost *:80>
@@ -310,8 +312,10 @@ echo '
         CustomLog ${APACHE_LOG_DIR}/access.log combined
 </VirtualHost>
 ' > /etc/apache2/sites-available/parikesit.abimanyu.b11.conf
+
 ln -s /etc/apache2/sites-available/parikesit.abimanyu.b11.conf /etc/apache2/sites-enabled
 ```
+Ujicoba `lynx http://www.parikesit.abimanyu.b11.com` pada node Sadewa.
 
 # Soal 14
 Pada subdomain tersebut folder /public hanya dapat melakukan directory listing sedangkan pada folder /secret tidak dapat diakses (403 Forbidden).
