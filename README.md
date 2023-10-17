@@ -233,12 +233,85 @@ Buat setup pada /var/www/html/index.php seperti berikut.
 
 # Soal 11
 Selain menggunakan Nginx, lakukan konfigurasi Apache Web Server pada worker Abimanyu dengan web server www.abimanyu.yyy.com. Pertama dibutuhkan web server dengan DocumentRoot pada /var/www/abimanyu.yyy
+## Jawaban
+Jalankan command-command berikut pada Abimanyu.
+```
+mkdir /var/www/abimanyu.b11 # Create directory
+wget --no-check-certificate 'https://drive.usercontent.google.com/download?id=1a4V23hwK9S7hQEDEcv9FL14UkkrHc-Zc' -O /var/www/abimanyu # Download resources
+unzip /var/www/abimanyu -d /var/www # Unzip folder
+
+mv /var/www/abimanyu.yyy.com/* /var/www/abimanyu.b11 # Move folder
+rm /var/www/abimanyu # Remove folder
+rm -rf /var/www/abimanyu.yyy.com/
+```
+Membuat konfigurasi pada /etc/apache2/sites-available/abimanyu.b11.conf. Dengan menggunakan file 000-default.conf sebagai template, lalu dimodifikasi seperti berikut ini.
+
+![image](https://github.com/ulimakrh/Jarkom-Modul-2-B11-2023/assets/114993076/65bceadb-8af0-4228-bd18-50584a5dac78)
+
+Lalu, ujicoba dengan menggunakan `lynx http://abimanyu.b11.com` atau `curl http://abimanyu.b11.com`.
+
+![image](https://github.com/ulimakrh/Jarkom-Modul-2-B11-2023/assets/114993076/4922fee6-5963-431c-91ac-702663e7632b)
+![image](https://github.com/ulimakrh/Jarkom-Modul-2-B11-2023/assets/114993076/a9c10161-e43f-40a5-80da-8a262ba8fa33)
+
+Ujicoba juga dilakukan pada node Sadewa.
+
+![image](https://github.com/ulimakrh/Jarkom-Modul-2-B11-2023/assets/114993076/baf6bc32-d938-4bf1-9435-d371f99ecf10)
 
 # Soal 12
 Setelah itu ubahlah agar url www.abimanyu.yyy.com/index.php/home menjadi www.abimanyu.yyy.com/home.
+## Jawaban
+Buat konfigurasi pada /etc/apache2/sites-available/abimanyu.b11.conf seperti ini.
+
+![image](https://github.com/ulimakrh/Jarkom-Modul-2-B11-2023/assets/114993076/3ac0fab6-6a58-460e-8f34-6b00da731b53)
+
+Bagian `Alias /home /var/www/abimanyu.b11/index.php/home` akan menggantikan path /index.php/home untuk mengakses home.html yang ada di folder /var/www/abimanyu.b11/.
+
+Ujicoba dilakukan pada node Sadewa dengan menggunakan `lynx http://www.abimanyu.b11.com/home`
+
+![image](https://github.com/ulimakrh/Jarkom-Modul-2-B11-2023/assets/114993076/7428bc6b-4c46-4a6a-8dc3-a091a82e5dfd)
 
 # Soal 13
 Selain itu, pada subdomain www.parikesit.abimanyu.yyy.com, DocumentRoot disimpan pada /var/www/parikesit.abimanyu.yyy
+## Jawaban
+Jalankan command-command berikut ini pada node Abimanyu.
+```
+mkdir /var/www/parikesit.abimanyu.b11
+wget --no-check-certificate 'https://drive.usercontent.google.com/download?id=1LdbYntiYVF_NVNgJis1GLCLPEGyIOreS' -O /var/www/parikesit
+unzip /var/www/parikesit -d /var/www
+
+mv /var/www/parikesit.abimanyu.yyy.com/* /var/www/parikesit.abimanyu.b11
+rm /var/www/parikesit
+rm -rf /var/www/parikesit.abimanyu.yyy.com/
+```
+![image](https://github.com/ulimakrh/Jarkom-Modul-2-B11-2023/assets/114993076/4380e1fa-16db-4dd6-ab56-1c2791f0ebfc)
+```
+echo '
+<VirtualHost *:80>
+        ServerName parikesit.abimanyu.b11.com
+        ServerAlias www.parikesit.abimanyu.b11.com
+        ServerAdmin webmaster@localhost
+        DocumentRoot /var/www/parikesit.abimanyu.b11
+
+        <Directory /var/www/parikesit.abimanyu.b11/public/images>
+            Options +FollowSymLinks +Indexes -Multiviews
+            AllowOverride All
+        </Directory>
+
+        <Directory /var/www/parikesit.abimanyu.b11/secret>
+            Options -Indexes
+            Deny from all
+        </Directory>
+
+        Alias /js /var/www/parikesit.abimanyu.b11/public/js
+        ErrorDocument 404 /error/404.html
+        ErrorDocument 403 /error/403.html
+
+        ErrorLog ${APACHE_LOG_DIR}/error.log
+        CustomLog ${APACHE_LOG_DIR}/access.log combined
+</VirtualHost>
+' > /etc/apache2/sites-available/parikesit.abimanyu.b11.conf
+ln -s /etc/apache2/sites-available/parikesit.abimanyu.b11.conf /etc/apache2/sites-enabled
+```
 
 # Soal 14
 Pada subdomain tersebut folder /public hanya dapat melakukan directory listing sedangkan pada folder /secret tidak dapat diakses (403 Forbidden).
