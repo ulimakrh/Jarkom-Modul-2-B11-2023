@@ -413,10 +413,7 @@ Untuk mengaksesnya buatlah autentikasi username berupa “Wayang” dan password
 # Soal 19
 Buatlah agar setiap kali mengakses IP dari Abimanyu akan secara otomatis dialihkan ke www.abimanyu.yyy.com (alias)
 ## Jawaban
-Menambahkan line berikut pada `/etc/apache2/sites-available/rjp.baratayuda.abimanyu.b11.conf`
-```
-        ServerAlias www.rjp.baratayuda.abimanyu.b11.com
-```
+
 # Soal 20
 Karena website www.parikesit.abimanyu.yyy.com semakin banyak pengunjung dan banyak gambar gambar random, maka ubahlah request gambar yang memiliki substring “abimanyu” akan diarahkan menuju abimanyu.png.
 ## Jawaban
