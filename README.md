@@ -51,7 +51,7 @@ Soal nomor ini memiliki langkah yang serupa dengan nomor 2.
 ```
 zone “abimanyu.b11.com” {
 	type master;
-	file “/etc/bind/domain/abimanyu.it19.com";
+	file “/etc/bind/domain/abimanyu.b11.com";
 };
 ```
 ![image](https://github.com/ulimakrh/Jarkom-Modul-2-B11-2023/assets/114993076/e6c0a9bd-67a8-4c87-971a-9a4565323ef8)
@@ -191,9 +191,9 @@ Berikut adalah setup dari /etc/bind/delegate/baratayuda/baratayuda.abimanyu.b11.
 
 - Sadewa
 
-Lakukan ujicoba dengan `ping baratayuda.abimanyu.b11.com` `ping www.baratayuda.abimanyu.b11.com`
+Lakukan ujicoba dengan `rjp.ping baratayuda.abimanyu.b11.com` `ping www.rjp.baratayuda.abimanyu.b11.com`
 
-![image](https://github.com/ulimakrh/Jarkom-Modul-2-B11-2023/assets/114993076/ec3cbd78-f305-4276-8608-25847ef2c0aa)
+![image](https://github.com/ulimakrh/Jarkom-Modul-2-B11-2023/assets/114993076/c295a7df-9dd2-458e-bd7d-f8cdcbf4e200)
 
 # Soal 9 dan 10
 Arjuna merupakan suatu Load Balancer Nginx dengan tiga worker (yang juga menggunakan nginx sebagai webserver) yaitu Prabakusuma, Abimanyu, dan Wisanggeni. Lakukan deployment pada masing-masing worker.
@@ -229,6 +229,7 @@ Ganti root dengan folder tempat index.php yang telah diekstrak tadi sebagai valu
 ![image](https://github.com/ulimakrh/Jarkom-Modul-2-B11-2023/assets/114993076/2ae27f6a-432e-4c2f-9021-f422a909444e)
 
 Buat setup pada /var/www/html/index.php seperti berikut.
+
 ![image](https://github.com/ulimakrh/Jarkom-Modul-2-B11-2023/assets/114993076/32e6e6ef-8708-4ba6-96e7-e0415782cc18)
 
 # Soal 11
@@ -294,7 +295,21 @@ echo '
         ServerAdmin webmaster@localhost
         DocumentRoot /var/www/parikesit.abimanyu.b11
 
-        <Directory /var/www/parikesit.abimanyu.b11/public/images>
+</VirtualHost>
+' > /etc/apache2/sites-available/parikesit.abimanyu.b11.conf
+
+ln -s /etc/apache2/sites-available/parikesit.abimanyu.b11.conf /etc/apache2/sites-enabled
+```
+Ujicoba `lynx http://www.parikesit.abimanyu.b11.com` pada node Sadewa.
+
+![image](https://github.com/ulimakrh/Jarkom-Modul-2-B11-2023/assets/114993076/4095be29-886e-4a4b-9f32-94721926679e)
+
+# Soal 14
+Pada subdomain tersebut folder /public hanya dapat melakukan directory listing sedangkan pada folder /secret tidak dapat diakses (403 Forbidden).
+## Jawaban
+Buat setup pada /etc/apache2/sites-available/parikesit.abimanyu.b11.conf dan restart apache2 dengan `service apache2 restart`.
+```
+<Directory /var/www/parikesit.abimanyu.b11/public/images>
             Options +FollowSymLinks +Indexes -Multiviews
             AllowOverride All
         </Directory>
@@ -303,39 +318,105 @@ echo '
             Options -Indexes
             Deny from all
         </Directory>
+```
+Lalu, pada Sadewa dilakukan ujicoba baik untuk mengakses /public maupun /secret.
+```
+lynx http://parikesit.abimanyu.b11.com/public
+lynx http://parikesit.abimanyu.b11.com/secret
+```
+- /public
+  
+![image](https://github.com/ulimakrh/Jarkom-Modul-2-B11-2023/assets/114993076/beee8dc1-be1d-4639-8bf4-c3b9fefc62ea)
 
-        Alias /js /var/www/parikesit.abimanyu.b11/public/js
+- /secret
+  
+![image](https://github.com/ulimakrh/Jarkom-Modul-2-B11-2023/assets/114993076/c5b22b5e-3727-4cd6-b78d-095924a63743)
+![image](https://github.com/ulimakrh/Jarkom-Modul-2-B11-2023/assets/114993076/5333237e-77b8-44a5-8c00-a4fd37bd2ddf)
+
+# Soal 15
+Buatlah kustomisasi halaman error pada folder /error untuk mengganti error kode pada Apache. Error kode yang perlu diganti adalah 404 Not Found dan 403 Forbidden.
+## Jawaban
+Masukkan konfigurasi di bawah ini ke `/etc/apache2/sites-available/parikesit.abimanyu.b11.conf`.
+```
         ErrorDocument 404 /error/404.html
         ErrorDocument 403 /error/403.html
 
         ErrorLog ${APACHE_LOG_DIR}/error.log
         CustomLog ${APACHE_LOG_DIR}/access.log combined
-</VirtualHost>
-' > /etc/apache2/sites-available/parikesit.abimanyu.b11.conf
-
-ln -s /etc/apache2/sites-available/parikesit.abimanyu.b11.conf /etc/apache2/sites-enabled
 ```
-Ujicoba `lynx http://www.parikesit.abimanyu.b11.com` pada node Sadewa.
-
-# Soal 14
-Pada subdomain tersebut folder /public hanya dapat melakukan directory listing sedangkan pada folder /secret tidak dapat diakses (403 Forbidden).
-
-# Soal 15
-Buatlah kustomisasi halaman error pada folder /error untuk mengganti error kode pada Apache. Error kode yang perlu diganti adalah 404 Not Found dan 403 Forbidden.
+Pada potongan konfigurasi itu, terdapat 2 line ErrorDocument dimana  untuk http error code 404 diarahkan ke 404.html dan http error code 403 ke 403.html, sehingga jika mencoba untuk mengakses path terlarang maka akan muncul pesan seperti di bawah.
+  
+![image](https://github.com/ulimakrh/Jarkom-Modul-2-B11-2023/assets/114993076/c5b22b5e-3727-4cd6-b78d-095924a63743)
+![image](https://github.com/ulimakrh/Jarkom-Modul-2-B11-2023/assets/114993076/5333237e-77b8-44a5-8c00-a4fd37bd2ddf)
+![image](https://github.com/ulimakrh/Jarkom-Modul-2-B11-2023/assets/114993076/b49c2639-f656-42b8-9100-c12fef5d3a99)
+![image](https://github.com/ulimakrh/Jarkom-Modul-2-B11-2023/assets/114993076/bd5ce0a2-42ba-4404-bfc2-ea6f130e2d20)
 
 # Soal 16
 Buatlah suatu konfigurasi virtual host agar file asset www.parikesit.abimanyu.yyy.com/public/js menjadi 
 www.parikesit.abimanyu.yyy.com/js 
+## Jawaban
+Tambahkan line `Alias /js /var/www/parikesit.abimanyu.b11/public/js` pada `/etc/apache2/sites-available/parikesit.abimanyu.b11.conf`. Line ini akan meneruskan client ke folder /public/js jika mengakses www.parikesit.abimanyu.b11.com/js.
+
+Ujicoba `lynx http://www.parikesit.abimanyu.b11.com/js` pada node Sadewa.
+
+![image](https://github.com/ulimakrh/Jarkom-Modul-2-B11-2023/assets/114993076/637aa644-a532-491d-9f0c-d8a57caefa6a)
 
 # Soal 17
 Agar aman, buatlah konfigurasi agar www.rjp.baratayuda.abimanyu.yyy.com hanya dapat diakses melalui port 14000 dan 14400.
+## Jawaban
+Masukkan konfigurasi berikut pada `/etc/apache2/sites-available/rjp.baratayuda.abimanyu.b11.conf` di node Abimanyu dengan menggantikan *:80 di tag VirtualHost menjadi *:14000 dan *:14400.
+
+```
+echo '
+<VirtualHost *:14000 *:14400>
+        ServerName rjp.baratayuda.abimanyu.b11.com
+        ServerAlias www.rjp.baratayuda.abimanyu.b11.com
+        ServerAdmin webmaster@localhost
+        DocumentRoot /var/www/rjp.baratayuda.abimanyu.b11
+
+        <Directory /var/www/rjp.baratayuda.abimanyu.b11>
+            AuthType Basic
+            AuthName "Authentication Required"
+            AuthUserFile /etc/apache2/passwords
+            Require user Wayang
+        </Directory>
+        <Directory /var/www/rjp.baratayuda.abimanyu.b11>
+            Options +Indexes
+        </Directory>
+
+        ErrorLog ${APACHE_LOG_DIR}/error.log
+        CustomLog ${APACHE_LOG_DIR}/access.log combined
+</VirtualHost>
+' > /etc/apache2/sites-available/rjp.baratayuda.abimanyu.b11.conf
+```
+Tambahkan port yang akan didengar dengan menambahkan Listen dengan port 14000 dan 14400 pada `/etc/apache2/ports.conf` seperti berikut.
+```
+Listen 80
+Listen 14000
+Listen 14400
+
+<IfModule ssl_module>
+        Listen 443
+</IfModule>
+
+<IfModule mod_gnutls.c>
+        Listen 443
+</IfModule>
+```
+Lakukan ujicoba pada Sadewa menggunakan `lynx http://www.rjp.baratayuda.abimanyu.b11.com` dan `lynx http://www.rjp.baratayuda.abimanyu.b11.com:14000`.
 
 # Soal 18
 Untuk mengaksesnya buatlah autentikasi username berupa “Wayang” dan password “baratayudayyy” dengan yyy merupakan kode kelompok. Letakkan DocumentRoot pada /var/www/rjp.baratayuda.abimanyu.yyy.
+## Jawaban
+
 
 # Soal 19
 Buatlah agar setiap kali mengakses IP dari Abimanyu akan secara otomatis dialihkan ke www.abimanyu.yyy.com (alias)
-
+## Jawaban
+Menambahkan line berikut pada `/etc/apache2/sites-available/rjp.baratayuda.abimanyu.b11.conf`
+```
+        ServerAlias www.rjp.baratayuda.abimanyu.b11.com
+```
 # Soal 20
 Karena website www.parikesit.abimanyu.yyy.com semakin banyak pengunjung dan banyak gambar gambar random, maka ubahlah request gambar yang memiliki substring “abimanyu” akan diarahkan menuju abimanyu.png.
-
+## Jawaban
