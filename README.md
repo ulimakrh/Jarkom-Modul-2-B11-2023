@@ -361,7 +361,9 @@ Ujicoba `lynx http://www.parikesit.abimanyu.b11.com/js` pada node Sadewa.
 
 ![image](https://github.com/ulimakrh/Jarkom-Modul-2-B11-2023/assets/114993076/637aa644-a532-491d-9f0c-d8a57caefa6a)
 
-# Soal 17
+# Soal 17 dan Soal 18
+Untuk mengaksesnya buatlah autentikasi username berupa “Wayang” dan password “baratayudayyy” dengan yyy merupakan kode kelompok. Letakkan DocumentRoot pada /var/www/rjp.baratayuda.abimanyu.yyy.
+
 Agar aman, buatlah konfigurasi agar www.rjp.baratayuda.abimanyu.yyy.com hanya dapat diakses melalui port 14000 dan 14400.
 ## Jawaban
 Masukkan konfigurasi berikut pada `/etc/apache2/sites-available/rjp.baratayuda.abimanyu.b11.conf` di node Abimanyu dengan menggantikan *:80 di tag VirtualHost menjadi *:14000 dan *:14400.
@@ -403,17 +405,39 @@ Listen 14400
         Listen 443
 </IfModule>
 ```
-Lakukan ujicoba pada Sadewa menggunakan `lynx http://www.rjp.baratayuda.abimanyu.b11.com` dan `lynx http://www.rjp.baratayuda.abimanyu.b11.com:14000`.
+Jalankan command `htpasswd -cb /etc/apache2/passwords Wayang baratayudab11` yang akan digunakan untuk basic authentication saat mengakses `http://10.14.4.4:14000`.
 
-# Soal 18
-Untuk mengaksesnya buatlah autentikasi username berupa “Wayang” dan password “baratayudayyy” dengan yyy merupakan kode kelompok. Letakkan DocumentRoot pada /var/www/rjp.baratayuda.abimanyu.yyy.
-## Jawaban
-
+Lakukan ujicoba pada Sadewa menggunakan `lynx http://10.14.4.4:14000` atau `10.14.4.4:14400`.
+![image](https://github.com/ulimakrh/Jarkom-Modul-2-B11-2023/assets/114993076/36963654-e0f4-4522-8b72-d8c5a93acc2b)
+![image](https://github.com/ulimakrh/Jarkom-Modul-2-B11-2023/assets/114993076/144e283d-df18-4e61-b24a-ca52f66470e0)
+![image](https://github.com/ulimakrh/Jarkom-Modul-2-B11-2023/assets/114993076/9509b568-69ae-489e-9cde-bde00be9cda0)
 
 # Soal 19
 Buatlah agar setiap kali mengakses IP dari Abimanyu akan secara otomatis dialihkan ke www.abimanyu.yyy.com (alias)
 ## Jawaban
+Tambahkan konfigurasi berikut pada `/etc/apache2/sites-available/abimanyu.b11.conf` 	
+```
+	RewriteEngine On
+        RewriteCond %{HTTP_HOST} !^www.abimanyu.b11.com$
+        RewriteRule /.* http://www.abimanyu.b11.com/ [R]
+```
+Jalankan `curl http://abimanyu.b11.com`
+![image](https://github.com/ulimakrh/Jarkom-Modul-2-B11-2023/assets/114993076/e52377f3-de4a-49d4-b5b8-ece99a08fdaf)
+
+Lakukan ujicoba pada Sadewa menggunakan `lynx http://10.14.4.4`
+![image](https://github.com/ulimakrh/Jarkom-Modul-2-B11-2023/assets/114993076/b4b4988d-5dfc-4994-ada2-1ee03ce133ad)
 
 # Soal 20
 Karena website www.parikesit.abimanyu.yyy.com semakin banyak pengunjung dan banyak gambar gambar random, maka ubahlah request gambar yang memiliki substring “abimanyu” akan diarahkan menuju abimanyu.png.
 ## Jawaban
+Tambahkan konfigurasi berikut pada `/var/www/parikesit.abimanyu.b11/public/images/.htaccess`
+```
+	RewriteEngine On
+	RewriteCond %{REQUEST_FILENAME} !-d
+	RewriteCond %{REQUEST_FILENAME} abimanyu
+	RewriteRule .* public/images/abimanyu.png [R,NC,L]
+```
+Ujicoba dengan `lynx parikesit.abimanyu.b11.com/public/images/not-abimanyu.png`, klik `D` untuk download dan `Enter` untuk save imagenya di client, lau exit dari lynx. `ls -la` untuk liat besar image yang sudah berhasil terdownload.
+
+![WhatsApp Image 2023-10-17 at 20 18 15_842d6ba3](https://github.com/ulimakrh/Jarkom-Modul-2-B11-2023/assets/114993076/fa77cff0-24eb-439f-ba63-ba8f213a9de0)
+![WhatsApp Image 2023-10-17 at 20 19 38_8555a839](https://github.com/ulimakrh/Jarkom-Modul-2-B11-2023/assets/114993076/2acf9376-6a9e-4eef-9f28-43902b19ebae)
